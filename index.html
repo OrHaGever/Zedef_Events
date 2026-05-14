@@ -1,384 +1,124 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ניהול אירועים למסעדה</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f6f3ee;
-      color: #222;
-    }
+<meta charset="UTF-8">
+<title>ניהול אירועים</title>
 
-    header {
-      background: #1f1b16;
-      color: white;
-      padding: 28px;
-      text-align: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 32px;
-    }
-
-    header p {
-      margin: 8px 0 0;
-      color: #d7c7ad;
-    }
-
-    main {
-      max-width: 1200px;
-      margin: auto;
-      padding: 24px;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 14px;
-      padding: 18px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-    }
-
-    .card strong {
-      display: block;
-      font-size: 28px;
-      margin-top: 8px;
-      color: #9a622e;
-    }
-
-    section {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 24px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-    }
-
-    h2 {
-      margin-top: 0;
-      color: #3a2a1d;
-    }
-
-    form {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    input, select, textarea, button {
-      font-family: inherit;
-      font-size: 15px;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-    }
-
-    textarea {
-      grid-column: 1 / -1;
-      min-height: 70px;
-    }
-
-    button {
-      background: #9a622e;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    button:hover {
-      background: #7f4f22;
-    }
-
-    .search {
-      width: 100%;
-      box-sizing: border-box;
-      margin-bottom: 14px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      overflow: hidden;
-    }
-
-    th, td {
-      padding: 12px;
-      border-bottom: 1px solid #eee;
-      text-align: right;
-      vertical-align: top;
-    }
-
-    th {
-      background: #f0e6d8;
-    }
-
-    .status {
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 13px;
-      display: inline-block;
-    }
-
-    .pending { background: #fff1c4; }
-    .confirmed { background: #d8f5d1; }
-    .done { background: #d8e9ff; }
-    .cancelled { background: #ffd6d6; }
-
-    .delete {
-      background: #b83232;
-      padding: 7px 10px;
-      font-size: 13px;
-    }
-
-    .empty {
-      color: #777;
-      text-align: center;
-      padding: 20px;
-    }
-
-    @media (max-width: 700px) {
-      table, thead, tbody, th, td, tr {
-        display: block;
-      }
-
-      thead {
-        display: none;
-      }
-
-      tr {
-        border: 1px solid #eee;
-        border-radius: 12px;
-        margin-bottom: 12px;
-        padding: 10px;
-      }
-
-      td {
-        border: none;
-        padding: 8px;
-      }
-
-      td::before {
-        content: attr(data-label) ": ";
-        font-weight: bold;
-      }
-    }
-  </style>
+<style>
+body {font-family:Arial;background:#f6f3ee;margin:0;padding:20px}
+h1 {text-align:center}
+section {background:#fff;padding:15px;margin-bottom:20px;border-radius:12px}
+input,select,button,textarea {margin:5px;padding:8px;border-radius:8px;border:1px solid #ccc}
+table {width:100%;margin-top:10px;border-collapse:collapse}
+td,th {border-bottom:1px solid #eee;padding:8px;text-align:right}
+button {background:#9a622e;color:white;border:none;cursor:pointer}
+</style>
 </head>
+
 <body>
 
-<header>
-  <h1>מערכת ניהול אירועים</h1>
-  <p>מעקב אחר אירועים, לקוחות ובקשות תפריט במקום אחד</p>
-</header>
+<h1>מערכת ניהול אירועים</h1>
 
-<main>
-  <div class="cards">
-    <div class="card">סה״כ אירועים <strong id="totalEvents">0</strong></div>
-    <div class="card">ממתינים לאישור <strong id="pendingEvents">0</strong></div>
-    <div class="card">בקשות תפריט <strong id="menuRequestsCount">0</strong></div>
-  </div>
+<section>
+<h2>הוספת אירוע</h2>
+<form id="eventForm">
+<input id="name" placeholder="שם לקוח">
+<input id="phone" placeholder="טלפון">
+<input id="date" type="date">
+<input id="guests" type="number" placeholder="אורחים">
+<textarea id="notes" placeholder="הערות"></textarea>
+<button>שמור</button>
+</form>
+</section>
 
-  <section>
-    <h2>הוספת אירוע חדש</h2>
-    <form id="eventForm">
-      <input required id="clientName" placeholder="שם הלקוח" />
-      <input required id="phone" placeholder="טלפון" />
-      <input required id="eventDate" type="date" />
-      <input required id="eventTime" type="time" />
-      <input required id="guests" type="number" placeholder="מספר אורחים" />
-      <select id="status">
-        <option value="pending">ממתין לאישור</option>
-        <option value="confirmed">מאושר</option>
-        <option value="done">בוצע</option>
-        <option value="cancelled">בוטל</option>
-      </select>
-      <textarea id="notes" placeholder="הערות / בקשות מיוחדות"></textarea>
-      <button type="submit">הוסף אירוע</button>
-    </form>
-  </section>
+<section>
+<h2>אירועים</h2>
+<input id="search" placeholder="חיפוש...">
+<table id="events"></table>
+</section>
 
-  <section>
-    <h2>רשימת אירועים לפי תאריך</h2>
-    <input class="search" id="searchInput" placeholder="חיפוש לפי שם לקוח, טלפון, סטטוס או הערות..." />
-    <table>
-      <thead>
-        <tr>
-          <th>תאריך</th>
-          <th>שעה</th>
-          <th>לקוח</th>
-          <th>טלפון</th>
-          <th>אורחים</th>
-          <th>סטטוס</th>
-          <th>הערות</th>
-          <th>פעולה</th>
-        </tr>
-      </thead>
-      <tbody id="eventsTable"></tbody>
-    </table>
-  </section>
+<section>
+<h2>בקשות תפריט</h2>
+<form id="menuForm">
+<input id="mname" placeholder="שם לקוח">
+<input id="mdate" type="date">
+<textarea id="mdetails" placeholder="תפריט"></textarea>
+<button>הוסף</button>
+</form>
 
-  <section>
-    <h2>בקשות תפריט מהטופס</h2>
-    <p>כאן יוצגו בקשות תפריט שנשלחו. כרגע ניתן להוסיף ידנית, ובהמשך אפשר לחבר לטופס קיים דרך Formspree, Google Sheets, Firebase או Airtable.</p>
-
-    <form id="menuForm">
-      <input required id="menuClient" placeholder="שם לקוח" />
-      <input required id="menuDate" type="date" />
-      <input id="menuGuests" type="number" placeholder="מספר אורחים" />
-      <textarea required id="menuDetails" placeholder="פירוט תפריט / מנות שנבחרו / בקשות מיוחדות"></textarea>
-      <button type="submit">הוסף בקשת תפריט</button>
-    </form>
-
-    <table>
-      <thead>
-        <tr>
-          <th>תאריך אירוע</th>
-          <th>לקוח</th>
-          <th>אורחים</th>
-          <th>בקשת תפריט</th>
-          <th>פעולה</th>
-        </tr>
-      </thead>
-      <tbody id="menuTable"></tbody>
-    </table>
-  </section>
-</main>
+<table id="menus"></table>
+</section>
 
 <script>
-  const statusText = {
-    pending: "ממתין לאישור",
-    confirmed: "מאושר",
-    done: "בוצע",
-    cancelled: "בוטל"
-  };
+let events = JSON.parse(localStorage.getItem("events")||"[]");
+let menus = JSON.parse(localStorage.getItem("menus")||"[]");
 
-  let events = JSON.parse(localStorage.getItem("restaurantEvents")) || [];
-  let menuRequests = JSON.parse(localStorage.getItem("menuRequests")) || [];
+function save(){
+localStorage.setItem("events",JSON.stringify(events));
+localStorage.setItem("menus",JSON.stringify(menus));
+}
 
-  const eventForm = document.getElementById("eventForm");
-  const menuForm = document.getElementById("menuForm");
-  const eventsTable = document.getElementById("eventsTable");
-  const menuTable = document.getElementById("menuTable");
-  const searchInput = document.getElementById("searchInput");
+eventForm.onsubmit=e=>{
+e.preventDefault();
+events.push({
+id:Date.now(),
+name:name.value,
+phone:phone.value,
+date:date.value,
+guests:guests.value,
+notes:notes.value
+});
+save(); render(); eventForm.reset();
+}
 
-  eventForm.addEventListener("submit", e => {
-    e.preventDefault();
+menuForm.onsubmit=e=>{
+e.preventDefault();
+menus.push({
+id:Date.now(),
+name:mname.value,
+date:mdate.value,
+details:mdetails.value
+});
+save(); render(); menuForm.reset();
+}
 
-    events.push({
-      id: Date.now(),
-      clientName: clientName.value,
-      phone: phone.value,
-      date: eventDate.value,
-      time: eventTime.value,
-      guests: guests.value,
-      status: status.value,
-      notes: notes.value
-    });
+function delEvent(id){
+events=events.filter(e=>e.id!=id);
+save(); render();
+}
 
-    save();
-    eventForm.reset();
-    render();
-  });
+function delMenu(id){
+menus=menus.filter(e=>e.id!=id);
+save(); render();
+}
 
-  menuForm.addEventListener("submit", e => {
-    e.preventDefault();
+function render(){
+let s=search.value?.toLowerCase()||"";
 
-    menuRequests.push({
-      id: Date.now(),
-      client: menuClient.value,
-      date: menuDate.value,
-      guests: menuGuests.value,
-      details: menuDetails.value
-    });
+eventsTable.innerHTML=events
+.filter(e=>JSON.stringify(e).toLowerCase().includes(s))
+.sort((a,b)=>new Date(a.date)-new Date(b.date))
+.map(e=>`
+<tr>
+<td>${e.date}</td>
+<td>${e.name}</td>
+<td>${e.guests}</td>
+<td>${e.notes||""}</td>
+<td><button onclick="delEvent(${e.id})">מחק</button></td>
+</tr>`).join("");
 
-    save();
-    menuForm.reset();
-    render();
-  });
+menusTable.innerHTML=menus.map(m=>`
+<tr>
+<td>${m.date}</td>
+<td>${m.name}</td>
+<td>${m.details}</td>
+<td><button onclick="delMenu(${m.id})">מחק</button></td>
+</tr>`).join("");
+}
 
-  searchInput.addEventListener("input", render);
+search.oninput=render;
 
-  function save() {
-    localStorage.setItem("restaurantEvents", JSON.stringify(events));
-    localStorage.setItem("menuRequests", JSON.stringify(menuRequests));
-  }
-
-  function deleteEvent(id) {
-    events = events.filter(event => event.id !== id);
-    save();
-    render();
-  }
-
-  function deleteMenuRequest(id) {
-    menuRequests = menuRequests.filter(request => request.id !== id);
-    save();
-    render();
-  }
-
-  function render() {
-    const search = searchInput.value.toLowerCase();
-
-    const sortedEvents = [...events]
-      .sort((a, b) => new Date(a.date + " " + a.time) - new Date(b.date + " " + b.time))
-      .filter(event =>
-        Object.values(event).join(" ").toLowerCase().includes(search)
-      );
-
-    eventsTable.innerHTML = sortedEvents.length ? sortedEvents.map(event => `
-      <tr>
-        <td data-label="תאריך">${formatDate(event.date)}</td>
-        <td data-label="שעה">${event.time}</td>
-        <td data-label="לקוח">${event.clientName}</td>
-        <td data-label="טלפון">${event.phone}</td>
-        <td data-label="אורחים">${event.guests}</td>
-        <td data-label="סטטוס">
-          <span class="status ${event.status}">${statusText[event.status]}</span>
-        </td>
-        <td data-label="הערות">${event.notes || "-"}</td>
-        <td data-label="פעולה">
-          <button class="delete" onclick="deleteEvent(${event.id})">מחק</button>
-        </td>
-      </tr>
-    `).join("") : `<tr><td colspan="8" class="empty">אין אירועים להצגה</td></tr>`;
-
-    const sortedMenuRequests = [...menuRequests]
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    menuTable.innerHTML = sortedMenuRequests.length ? sortedMenuRequests.map(request => `
-      <tr>
-        <td data-label="תאריך אירוע">${formatDate(request.date)}</td>
-        <td data-label="לקוח">${request.client}</td>
-        <td data-label="אורחים">${request.guests || "-"}</td>
-        <td data-label="בקשת תפריט">${request.details}</td>
-        <td data-label="פעולה">
-          <button class="delete" onclick="deleteMenuRequest(${request.id})">מחק</button>
-        </td>
-      </tr>
-    `).join("") : `<tr><td colspan="5" class="empty">אין בקשות תפריט להצגה</td></tr>`;
-
-    totalEvents.textContent = events.length;
-    pendingEvents.textContent = events.filter(e => e.status === "pending").length;
-    menuRequestsCount.textContent = menuRequests.length;
-  }
-
-  function formatDate(dateString) {
-    if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString("he-IL");
-  }
-
-  render();
+render();
 </script>
 
 </body>
